@@ -1,0 +1,8 @@
+{
+  "python_experiment_executed": true,
+  "python_replications_per_cell": 5000,
+  "python_tests_passed": true,
+  "r_implementation_included": true,
+  "r_implementation_executed_here": false,
+  "reason_r_not_executed_here": "Rscript was not available in the execution environment."
+}

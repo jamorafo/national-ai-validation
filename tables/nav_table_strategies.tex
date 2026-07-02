@@ -1,0 +1,18 @@
+\begin{table}[h!]
+\centering
+\small
+\caption{Probability construction, estimator, and uncertainty procedure for the five strategies.}
+\label{tab:nav-strategies}
+\begin{tabular}{lp{0.19\linewidth}p{0.20\linewidth}p{0.23\linewidth}p{0.18\linewidth}}
+\toprule
+Strategy & Construction process & Point estimator & Variance procedure & Role \\
+\midrule
+N1 & Patient SRSWOR & Ordinary sensitivity ratio & Patient-SRS ratio linearisation & Ideal self-weighting benchmark \\
+N2 & Proportional stratified hospital SRS & Design-weighted combined ratio & Stratified cluster Taylor linearisation & Realistic target-aligned design \\
+N3 & Enriched stratified hospital SRS & Unweighted pooled ratio & Cluster-aware variance around $\theta_{\mathcal O,3}$ & Deliberate estimator mismatch \\
+N4 & Same enriched ORP as N3 & Design-weighted combined ratio & Stratified cluster Taylor linearisation & Compatible enrichment \\
+N5 & Same enriched ORP and point estimate as N4 & Design-weighted combined ratio & Naive patient-level variance & Deliberate uncertainty mismatch \\
+\bottomrule
+\end{tabular}
+\end{table}
+

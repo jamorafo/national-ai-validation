@@ -1,0 +1,365 @@
+% ============================================================================
+% Simulation section: national-AI-validation
+% Requires: amsmath, amssymb, booktabs, graphicx
+% All floats use [h!] as requested.
+% ============================================================================
+\providecommand{\navdir}{national-AI-validation}
+\providecommand{\navfigdirR}{\navdir/figures/r_publication}
+\providecommand{\navfigdirPy}{\navdir/figures/python_validation}
+\providecommand{\navincludegraphics}[2][]{%
+  \IfFileExists{\navfigdirR/#2.pdf}%
+    {\includegraphics[#1]{\navfigdirR/#2.pdf}}%
+    {\includegraphics[#1]{\navfigdirPy/#2.pdf}}%
+}
+
+\section{Simulation Study: Probability-Based National Validation of a Fixed Clinical AI System}
+\label{sec:sim-national-ai-validation}
+
+\subsection{Purpose and policy question}
+
+This simulation provides a single empirical demonstration of the chapter's
+estimation-grounded validation framework. A fixed clinical AI system produces
+a binary alert for clinical deterioration within 24 hours. Before national
+deployment, a public authority must determine whether sensitivity is at least
+\(\tau=0.85\) in the target-country population and whether the same requirement
+is met among harder-to-predict patients. The complete predictive pipeline,
+including preprocessing, missing-data handling, fitted parameters, operating
+threshold, calibration, and post-processing, is locked before the audit is
+designed.
+
+The experiment evaluates complete estimation strategies
+\begin{equation}
+  \eta_k=(d_k,\widehat\theta_k,V_k),
+  \label{eq:nav-strategy}
+\end{equation}
+where \(d_k\) is the probability construction process,
+\(\widehat\theta_k\) the estimator, and \(V_k\) the uncertainty procedure.
+The principal purpose is to show that the evidentiary value of a realised
+Objective Reference Point (ORP) does not arise from its observations alone.
+It depends on the target parameter and on whether the estimator and variance
+procedure are compatible with the construction process.
+
+This is a target-adequacy experiment. The WEIRD-country development setting
+provides motivation only; source performance and the External Transportability
+Criterion are not simulated.
+
+\subsection{Fixed target population and estimands}
+
+One finite target population was generated and held fixed throughout the
+Monte Carlo experiment. It contains all \(N_T=25{,}585\) eligible admissions
+in \(H=400\) hospitals during one common, pre-specified audit period. There is
+no calendar-month sampling stage. Hospitals belong to a frame-known design
+stratum \(H_h\in\{0,1\}\), with 300 standard hospitals and 100 priority
+hospitals. The priority stratum has a higher expected prevalence of difficult
+patients and deterioration events. Patient difficulty is represented by the
+separate analysis variable \(Q_{hi}\in\{0,1\}\). Both values of \(Q\) occur
+in both hospital strata.
+
+For admission \((h,i)\), let \(Y_{hi}\) indicate true deterioration,
+\(A_{hi}\) denote the alert produced by the locked system, and
+\(T_{hi}=A_{hi}Y_{hi}\) denote a true positive. The national sensitivity
+estimand is
+\begin{equation}
+  \theta_T
+  =
+  \Pr_T(A=1\mid Y=1)
+  =
+  \frac{\sum_h\sum_i A_{hi}Y_{hi}}
+       {\sum_h\sum_i Y_{hi}}.
+  \label{eq:nav-national-target}
+\end{equation}
+For \(q\in\{0,1\}\), the patient-subgroup estimands are
+\begin{equation}
+  \theta_{T,q}
+  =
+  \Pr_T(A=1\mid Y=1,Q=q).
+  \label{eq:nav-subgroup-target}
+\end{equation}
+
+The finite-population truths were
+\[
+  \theta_T=0.8784,
+  \qquad
+  \theta_{T,0}=0.9480,
+  \qquad
+  \theta_{T,1}=0.7368.
+\]
+National and easier-subgroup performance therefore exceed the adequacy
+threshold, whereas harder-subgroup performance is clearly below it.
+
+\input{\navdir/tables/nav_table_population_truths.tex}
+
+Figure~\ref{fig:nav-population-structure} shows why the hospital stratum is
+useful for prospective enrichment without being identical to the patient
+subgroup. Priority hospitals contain more harder patients and more outcome
+events, but sensitivity is also lower in that stratum.
+
+\begin{figure}[h!]
+  \centering
+  \navincludegraphics[width=0.90\linewidth]{nav_fig1_population_structure}
+  \caption{Finite-population structure by hospital design stratum.}
+  \label{fig:nav-population-structure}
+\end{figure}
+
+\subsection{Target, observation, and realised ORP distributions}
+
+The target distribution \(P_T\) is the finite-population empirical
+distribution assigning equal mass to every eligible admission. For strategy
+\(k\), the design-induced unweighted observation distribution is
+\begin{equation}
+  P_{\mathcal O,k}(h,i)
+  =
+  \frac{\pi_{hi}^{(k)}}
+       {\sum_g\sum_r \pi_{gr}^{(k)}},
+  \label{eq:nav-po}
+\end{equation}
+where \(\pi_{hi}^{(k)}\) is the first-order probability that admission
+\((h,i)\) appears in the ORP. Under hospital sampling followed by a census of
+eligible admissions, \(\pi_{hi}^{(k)}=\pi_h^{(k)}\). The associated
+unweighted sensitivity parameter is
+\begin{equation}
+  \theta_{\mathcal O,k}
+  =
+  \frac{\sum_h\sum_i \pi_{hi}^{(k)}A_{hi}Y_{hi}}
+       {\sum_h\sum_i \pi_{hi}^{(k)}Y_{hi}}.
+  \label{eq:nav-theta-o}
+\end{equation}
+This quantity is distinct from both \(\theta_T\) and the empirical estimate
+computed from one realised ORP.
+
+In the enriched design, one half of the selected hospitals is drawn from each
+hospital stratum. Because the frame contains three times as many standard as
+priority hospitals, the priority-hospital inclusion probability is three times
+larger. The exact enriched unweighted national parameter is
+\(\theta_{\mathcal O,3}=0.8419\), producing the reference--target discrepancy
+\begin{equation}
+  \operatorname{RTD}_3
+  =
+  \theta_{\mathcal O,3}-\theta_T
+  =-0.0365.
+  \label{eq:nav-rtd}
+\end{equation}
+The corresponding discrepancies are \(-0.0056\) for easier patients and
+\(-0.0258\) for harder patients.
+
+\input{\navdir/tables/nav_table_observation_parameters.tex}
+
+\begin{figure}[h!]
+  \centering
+  \navincludegraphics[width=0.90\linewidth]{nav_fig2_target_observation_parameters}
+  \caption{Target parameters and design-induced unweighted observation parameters for the enriched ORP.}
+  \label{fig:nav-target-observation}
+\end{figure}
+
+\subsection{Design--estimator--variance strategies}
+
+Five strategies were compared. N1 is an ideal patient-level benchmark that
+requires a complete patient frame. N2 and N4 are operationally realistic
+hospital-frame designs. N3 and N4 use exactly the same enriched realised ORP
+within every replication but different point estimators. N4 and N5 use the
+same ORP and exactly the same point estimate but different uncertainty
+procedures.
+
+For weighted hospital strategies, stratum totals are estimated independently.
+For \(j\in\{0,1\}\),
+\begin{equation}
+  \widehat T_j
+  =
+  \frac{H_j}{m_j}\sum_{h\in s_j}T_h,
+  \qquad
+  \widehat Y_j
+  =
+  \frac{H_j}{m_j}\sum_{h\in s_j}Y_h,
+  \label{eq:nav-stratum-totals}
+\end{equation}
+and national sensitivity is estimated as
+\begin{equation}
+  \widehat\theta
+  =
+  \frac{\widehat T_0+\widehat T_1}
+       {\widehat Y_0+\widehat Y_1}.
+  \label{eq:nav-combined-ratio}
+\end{equation}
+Subgroup estimators use subgroup-specific numerator and denominator totals in
+exactly the same way. No target positive-case shares are supplied to the
+estimator.
+
+\input{\navdir/tables/nav_table_strategies.tex}
+
+The total hospital sample sizes were
+\[
+  m\in\{40,80,120,160\}.
+\]
+N2 used proportional allocations
+\((30,10)\), \((60,20)\), \((90,30)\), and \((120,40)\). N3--N5 used
+enriched allocations \((20,20)\), \((40,40)\), \((60,60)\), and
+\((80,80)\). Every selected hospital contributed all eligible admissions
+from the common audit period. N1 patient sample sizes were chosen to equal the
+expected number of admissions observed under proportional hospital sampling.
+
+N2 and N4 used a stratified hospital-level Taylor linearisation for the ratio.
+N3 used a cluster-aware variance around the unweighted parameter it actually
+targeted. N5 instead treated weighted positive patients as independent and
+unclustered. Logit-transformed 95\% confidence intervals were used throughout.
+
+The PR evaluation tolerances were
+\begin{equation}
+  \varepsilon_b=0.03,
+  \qquad
+  \varepsilon_v
+  =
+  \left(\frac{0.03}{1.96}\right)^2.
+  \label{eq:nav-pr-tolerances}
+\end{equation}
+Bias and precision were assessed from 5,000 repeated samples per design and
+sample-size condition. Empirical interval coverage was reported separately,
+not folded into the PR variance condition. Because TAC requires a reliable
+interval in addition to point-estimation PR, a formal TAC classification was
+issued only when the PR conditions, target-interval validity, and declared
+variance-procedure compatibility were all satisfied.
+
+\subsection{Results}
+
+\paragraph{Same target parameter under different probability designs.}
+N1, N2, and N4 all recovered national sensitivity when paired with compatible
+estimators. Across all sample sizes, N1's absolute national bias was below
+\(0.0004\), while N4's was below \(0.0003\). N2 was also effectively unbiased.
+The designs differed in precision because patient SRS and clustered hospital
+sampling have different variance structures, but all three provided a valid
+route to the same target parameter once their design information was used.
+
+\input{\navdir/tables/nav_table_national_performance.tex}
+
+\begin{figure}[h!]
+  \centering
+  \navincludegraphics[width=0.98\linewidth]{nav_fig3_bias}
+  \caption{Bias by strategy, hospital sample size, and sensitivity estimand. Dotted horizontal lines mark the pre-specified bias tolerance.}
+  \label{fig:nav-bias}
+\end{figure}
+
+\paragraph{Same enriched ORP, different point estimators.}
+N3 and N4 contained exactly the same selected hospitals and admissions in
+every replication. Nevertheless, N3's national bias remained approximately
+\(-0.0365\) at every sample size, closely matching the exact RTD. Its empirical
+standard deviation decreased from \(0.0259\) at \(m=40\) to \(0.0073\) at
+\(m=160\), but its mean estimate remained centred near
+\(\theta_{\mathcal O,3}=0.8419\). N4 used the same ORP with inverse-inclusion
+weights and remained centred on \(\theta_T=0.8784\).
+
+This comparison directly separates the realised ORP from the estimation
+strategy. Weighting did not alter the observed units or transform the ORP into
+a different dataset. It altered the point estimator's inferential target.
+
+\begin{figure}[h!]
+  \centering
+  \navincludegraphics[width=0.90\linewidth]{nav_fig9_large_wrong_orp}
+  \caption{Increasing sample size concentrates N3 around the design-induced observation parameter rather than the national target.}
+  \label{fig:nav-large-wrong-orp}
+\end{figure}
+
+\paragraph{Same ORP and point estimate, different uncertainty.}
+N4 and N5 had numerically identical estimates in every replication. Their
+uncertainty statements differed substantially. At \(m=80\), the empirical
+standard deviation of the common national estimator was \(0.0135\). N4's mean
+estimated standard error was also \(0.0135\), with 95\% coverage of \(0.947\).
+N5's mean standard error was only \(0.0102\), and coverage fell to \(0.861\).
+At \(m=120\), coverage was \(0.942\) for N4 and \(0.890\) for N5.
+
+The narrower N5 intervals also produced more mechanically decisive TAC
+results. For example, at \(m=80\), the mechanical adequate-decision frequency
+was 68.6\% under N5 compared with 49.1\% under N4. These additional decisions
+were not additional evidence; they resulted from ignoring the hospital
+clustering that generated the ORP.
+
+\input{\navdir/tables/nav_table_variance_comparison.tex}
+
+\begin{figure}[h!]
+  \centering
+  \navincludegraphics[width=0.90\linewidth]{nav_fig5_coverage_n4_n5}
+  \caption{Empirical target-parameter coverage for the same enriched point estimator under compatible and naive variance procedures.}
+  \label{fig:nav-coverage}
+\end{figure}
+
+\paragraph{Enrichment and harder-subgroup evidence.}
+The enriched strategy increased harder-subgroup positive cases by
+approximately 49\% relative to proportional hospital sampling at every sample
+size. At \(m=160\), the mean count increased from 635 under N2 to 947 under
+N4. The empirical standard deviation of harder-subgroup sensitivity decreased
+from \(0.0222\) to \(0.0147\), a reduction of about 34\%. N4 consequently
+passed the pre-specified hard-subgroup precision criterion at \(m=160\), while
+N2 remained evidentially insufficient for that estimand.
+
+\input{\navdir/tables/nav_table_hard_evidence.tex}
+
+\begin{figure}[h!]
+  \centering
+  \navincludegraphics[width=0.90\linewidth]{nav_fig6_hard_positive_yield}
+  \caption{Harder-subgroup positive-case yield under proportional and enriched hospital sampling.}
+  \label{fig:nav-hard-yield}
+\end{figure}
+
+\paragraph{PR was estimand-relative.}
+The same strategy did not receive a single global classification. N4 supported
+national sensitivity from \(m=80\) onward but supported harder-subgroup
+sensitivity only at \(m=160\). N2 supported national sensitivity at
+\(m=120\) and \(m=160\) but did not achieve the required harder-subgroup
+precision. N3 failed the national bias criterion at every sample size even
+when its sampling variance became small. These results operationalise the
+claim that PR is relative to a parameter and tolerance, not a descriptive
+property of the ORP.
+
+\input{\navdir/tables/nav_table_pr_status.tex}
+
+\begin{figure}[h!]
+  \centering
+  \navincludegraphics[width=0.92\linewidth]{nav_fig7_evidential_status}
+  \caption{Full evidential status by strategy, sample size, and estimand.}
+  \label{fig:nav-evidential-status}
+\end{figure}
+
+\paragraph{TAC followed PR and uncertainty validation.}
+At \(m=160\), N4 produced a formal national TAC decision of Adequate in
+92.3\% of replications and Inconclusive in 7.7\%. For harder-subgroup
+sensitivity, where the truth was 0.7368, N4 produced Not adequate in 100\% of
+replications. N2 remained evidentially insufficient for the harder-subgroup
+TAC because its precision criterion failed. N3 was not assigned a national TAC
+classification because it estimated the wrong national parameter, and N5 was
+not assigned a formal classification because its declared uncertainty
+procedure was incompatible with the clustered design.
+
+\input{\navdir/tables/nav_table_tac.tex}
+
+\begin{figure}[h!]
+  \centering
+  \navincludegraphics[width=0.96\linewidth]{nav_fig8_tac}
+  \caption{Formal TAC decision frequencies at \(m=160\), with evidential insufficiency shown separately from interval-based inconclusiveness.}
+  \label{fig:nav-tac}
+\end{figure}
+
+\subsection{Interpretation}
+
+The numerical results support six conclusions. First, \(P_T\) defines where
+the performance claim applies, whereas \(P_{\mathcal O,k}\) describes the
+unweighted composition induced by the design. Second, the empirical ORP is a
+realised reference object rather than a target parameter. Third, the same ORP
+can support different inferential conclusions when paired with different
+estimators, as demonstrated by N3 and N4. Fourth, the same point estimator can
+have different evidentiary reliability under different variance procedures,
+as demonstrated by N4 and N5. Fifth, prospective enrichment can improve
+harder-subgroup precision while preserving national inference when inclusion
+probabilities are known and the estimator is compatible. Sixth, increasing
+sample size reduces sampling error but does not remove a fixed
+reference--target discrepancy.
+
+The practical implication is that national validation should be planned from
+the policy question backward. The target population and performance parameter
+must be specified first; the hospital frame and allocation should then be
+chosen to support both national and subgroup questions; and the estimator and
+variance procedure must be declared as part of the strategy. PR is the
+evidential gatekeeper. TAC is the subsequent decision rule and cannot repair a
+failure of target alignment or uncertainty validity.
+
+The conclusions concern sensitivity at one locked operating threshold. They
+do not establish global model safety, calibration, discrimination, or clinical
+utility, each of which would require its own estimand-compatible validation
+strategy.

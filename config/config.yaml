@@ -1,0 +1,51 @@
+project:
+  name: national-AI-validation
+  master_seed: 141421
+  monte_carlo_replications: 5000
+  language_tag: python
+  audit_period: fixed_common_period
+
+target:
+  adequacy_threshold: 0.85
+  bias_tolerance: 0.03
+  halfwidth_tolerance: 0.03
+  confidence_level: 0.95
+  coverage_tolerance: 0.025
+
+population:
+  hospitals_standard: 300
+  hospitals_priority: 100
+  hospital_size_log_mean: 4.1276330833596715
+  hospital_size_log_sd: 0.25
+  hospital_size_min: 35
+  hospital_size_max: 105
+  random_effect_sd_q: 0.30
+  random_effect_sd_y: 0.38
+  random_effect_sd_a: 1.20
+  random_effect_corr_q_y: 0.15
+  random_effect_corr_q_a: 0.00
+  random_effect_corr_y_a: 0.15
+  q_baseline_probability: 0.12
+  q_priority_log_odds: 1.80
+  y_baseline_probability: 0.14
+  y_priority_log_odds: 0.45
+  y_hard_log_odds: 0.65
+  sensitivity_baseline_probability: 0.97
+  sensitivity_hard_log_odds: -2.00
+  sensitivity_priority_log_odds: -0.55
+  false_alert_baseline_probability: 0.10
+  false_alert_hard_log_odds: 0.15
+  false_alert_priority_log_odds: 0.15
+
+designs:
+  hospital_sample_sizes: [40, 80, 120, 160]
+  proportional_allocations:
+    "40": [30, 10]
+    "80": [60, 20]
+    "120": [90, 30]
+    "160": [120, 40]
+  enriched_allocations:
+    "40": [20, 20]
+    "80": [40, 40]
+    "120": [60, 60]
+    "160": [80, 80]

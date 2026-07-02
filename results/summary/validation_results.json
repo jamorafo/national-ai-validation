@@ -1,0 +1,62 @@
+{
+  "inclusion_probabilities": {
+    "passed": true,
+    "detail": "[0.1, 0.1, 0.06666666666666667, 0.2, 0.2, 0.2, 0.13333333333333333, 0.4, 0.3, 0.3, 0.2, 0.6, 0.4, 0.4, 0.26666666666666666, 0.8]"
+  },
+  "no_month_sampling": {
+    "passed": true,
+    "detail": "No month variable appears in replication output."
+  },
+  "fixed_period": {
+    "passed": true,
+    "detail": "fixed_common_period"
+  },
+  "N3_N4_N5_same_orp": {
+    "passed": true,
+    "detail": "Maximum within-replication unique count: 1"
+  },
+  "N4_N5_identical_points": {
+    "passed": true,
+    "detail": "Maximum absolute difference: 0.0"
+  },
+  "truths_match_enumeration": {
+    "passed": true,
+    "detail": "{'national': np.float64(0.8783980078854534), 'easy': np.float64(0.9480037140204272), 'hard': np.float64(0.7367758186397985)}"
+  },
+  "N1_approximately_unbiased": {
+    "passed": true,
+    "detail": "Maximum absolute bias: 0.000504"
+  },
+  "N4_design_consistent": {
+    "passed": true,
+    "detail": "Maximum absolute bias: 0.000599"
+  },
+  "N3_targets_observation_parameter": {
+    "passed": true,
+    "detail": "[6.499776474000463e-05, 4.341070288171878e-05, 0.00027825604571019014, 2.935812506910107e-05]"
+  },
+  "N4_N5_same_empirical_distribution": {
+    "passed": true,
+    "detail": "Empirical SDs are identical."
+  },
+  "N5_naive_variance_detected": {
+    "passed": true,
+    "detail": "[{'hospital_sample_size': 40, 'target_coverage': 0.8172}, {'hospital_sample_size': 80, 'target_coverage': 0.8614}, {'hospital_sample_size': 120, 'target_coverage': 0.8896}, {'hospital_sample_size': 160, 'target_coverage': 0.928}]"
+  },
+  "no_valid_TAC_after_gate_failure": {
+    "passed": true,
+    "detail": "Violating rows: 0"
+  },
+  "metadata": {
+    "python_version": "3.13.5",
+    "numpy_version": "2.3.5",
+    "pandas_version": "2.2.3",
+    "scipy_version": "1.17.0",
+    "pyyaml_version": "6.0.3",
+    "config_sha256": "28773fec9fcd11bf37d5d65ba7f781e1fe25c61af9a75e97acf8e21e19be303c",
+    "finite_population_csv_sha256": "8c36417b0732125d0601a0b469f37d795da61deb34cc962fbba8ffabd1bbee29",
+    "replications_csv_sha256": "18957ed4734da1bd839844961d0e251ed7526be1f52a11d6c7a553e0e9b039ba",
+    "population_size": 25585,
+    "hospital_count": 400
+  }
+}

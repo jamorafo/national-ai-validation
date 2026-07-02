@@ -1,0 +1,119 @@
+suppressPackageStartupMessages({
+  library(data.table)
+  library(ggplot2)
+  library(scales)
+})
+
+save_plot_set <- function(plot, outdir, stem, width, height) {
+  ggsave(file.path(outdir, paste0(stem, ".pdf")), plot, width = width, height = height)
+  ggsave(file.path(outdir, paste0(stem, ".svg")), plot, width = width, height = height, device = svglite::svglite)
+  ggsave(file.path(outdir, paste0(stem, ".png")), plot, width = width, height = height, dpi = 320)
+}
+
+make_figures_R <- function(project) {
+  outdir <- file.path(project, "figures", "r_publication")
+  dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
+  suffix <- if (file.exists(file.path(project, "results", "summary", "performance_summary_R.csv"))) "_R" else ""
+  perf <- fread(file.path(project, "results", "summary", paste0("performance_summary", suffix, ".csv")))
+  obs <- fread(file.path(project, "results", "summary", paste0("observation_parameters", suffix, ".csv")))
+  tac <- fread(file.path(project, "results", "summary", paste0("tac_frequencies", suffix, ".csv")))
+  rawfile <- file.path(project, "results", "raw", paste0("replications", ifelse(suffix == "_R", "_R", ""), ".csv.gz"))
+  raw <- fread(rawfile)
+  pop <- load_locked_population(project)
+  counts <- fread(file.path(project, "results", "summary", paste0("hard_positive_count_quantiles", suffix, ".csv")))
+  config <- load_config(project)
+
+  labs <- c(N1 = "N1 Patient SRS", N2 = "N2 Proportional hospitals", N3 = "N3 Enriched, unweighted", N4 = "N4 Enriched, design-weighted", N5 = "N5 Enriched, naive variance")
+  sci_palette <- c(
+    blue = "#0072B2",
+    orange = "#E69F00",
+    green = "#009E73",
+    vermillion = "#D55E00",
+    purple = "#CC79A7",
+    skyblue = "#56B4E9",
+    yellow = "#F0E442",
+    black = "#000000"
+  )
+  strategy_palette_id <- setNames(sci_palette[c("blue", "orange", "green", "vermillion", "purple")], names(labs))
+  strategy_palette_label <- setNames(sci_palette[c("blue", "orange", "green", "vermillion", "purple")], labs)
+  base_theme <- theme_minimal(base_size = 10) +
+    theme(
+      panel.grid.minor = element_blank(),
+      panel.grid.major = element_line(colour = "grey88", linewidth = 0.30),
+      legend.position = "bottom", legend.title = element_text(face = "bold", size = 11.5), legend.text = element_text(face = "bold", size = 10.5), legend.title = element_text(face = "bold", size = 11.5), legend.text = element_text(face = "bold", size = 10.5),
+      plot.title = element_blank(),
+      plot.subtitle = element_blank(),
+      axis.title = element_text(colour = "grey15", face = "bold", size = 13),
+      axis.text = element_text(colour = "grey20", face = "bold", size = 10.5),
+      strip.text = element_text(face = "bold", colour = "grey15", size = 12)
+    )
+
+  structure <- rbindlist(list(
+    pop[, .(quantity = "Hard-subgroup prevalence", value = mean(hard_subgroup)), by = hospital_stratum],
+    pop[, .(quantity = "Event prevalence", value = mean(outcome)), by = hospital_stratum],
+    pop[, .(quantity = "Sensitivity", value = sum(true_positive) / sum(outcome)), by = hospital_stratum]
+  ))
+  p1 <- ggplot(structure, aes(quantity, value, fill = factor(hospital_stratum, levels = c(0, 1), labels = c("Standard hospitals", "Priority hospitals")))) +
+    geom_col(position = position_dodge(width = .75), width = .68) +
+    geom_text(fontface = "bold", size = 3.8, fontface = "bold", size = 3.8, aes(label = sprintf("%.3f", value)), position = position_dodge(width = .75), vjust = -.3, size = 3) +
+    scale_y_continuous(limits = c(0, 1.03), expand = expansion(mult = c(0, .02))) + scale_fill_manual(values = c("Standard hospitals" = "#0072B2", "Priority hospitals" = "#D55E00")) + scale_fill_manual(values = c("Standard hospitals" = "#0072B2", "Priority hospitals" = "#D55E00")) + scale_fill_manual(values = c("Standard hospitals" = "#0072B2", "Priority hospitals" = "#D55E00")) + scale_fill_manual(values = c("Standard hospitals" = "#0072B2", "Priority hospitals" = "#D55E00")) + scale_fill_manual(values = c("Standard hospitals" = "#0072B2", "Priority hospitals" = "#D55E00")) +
+    labs(x = NULL, y = "Finite-population proportion", fill = "Hospital stratum") + base_theme
+  save_plot_set(p1, outdir, "nav_fig1_population_structure", 8.4, 4.8)
+
+  d2 <- obs[strategy == "N3" & hospital_sample_size == max(hospital_sample_size)]
+  d2[, estimand := factor(estimand, levels = c("hard", "easy", "national"), labels = c("Harder subgroup", "Easier subgroup", "National"))]
+  p2 <- ggplot(d2, aes(y = estimand)) +
+    geom_segment(aes(x = observation_parameter, xend = target_parameter, yend = estimand), linewidth = 1.3, colour = "grey65") +
+    geom_point(aes(x = target_parameter, shape = "Target parameter"), size = 2.7, colour = sci_palette["blue"]) +
+    geom_point(aes(x = observation_parameter, shape = "Enriched observation parameter"), size = 2.7, colour = sci_palette["vermillion"]) +
+    geom_vline(xintercept = config$target$adequacy_threshold, linetype = 2) +
+    geom_text(fontface = "bold", size = 3.8, fontface = "bold", size = 3.8, aes(x = pmin(target_parameter, observation_parameter) - .006, label = sprintf("RTD %+.3f", reference_target_discrepancy)), hjust = 1, size = 3) +
+    coord_cartesian(xlim = c(.66, .98)) +
+    labs(x = "Sensitivity", y = NULL, shape = NULL) + base_theme
+  save_plot_set(p2, outdir, "nav_fig2_target_observation_parameters", 8.2, 4.8)
+
+  perf[, strategy_label := factor(labs[strategy], levels = labs)]
+  perf[, estimand_label := factor(estimand, levels = c("national", "easy", "hard"), labels = c("National", "Easier subgroup", "Harder subgroup"))]
+  p3 <- ggplot(perf, aes(hospital_sample_size, bias, colour = strategy_label, linetype = strategy_label, shape = strategy_label)) +
+    geom_hline(yintercept = c(-.03, .03), linetype = 3, colour = "grey55") + geom_hline(yintercept = 0) +
+    geom_line() + geom_point(size = 2) + facet_wrap(~estimand_label, ncol = 1, scales = "free_y") + scale_colour_manual(values = strategy_palette_label) +
+    labs(x = "Hospitals selected, m", y = "Bias in sensitivity", linetype = NULL, shape = NULL) + base_theme
+  save_plot_set(p3, outdir, "nav_fig3_bias", 13.8, 4.3)
+
+  p4 <- ggplot(perf, aes(hospital_sample_size, rmse, colour = strategy_label, linetype = strategy_label, shape = strategy_label)) +
+    geom_line() + geom_point(size = 2) + facet_wrap(~estimand_label, ncol = 1, scales = "free_y") + scale_colour_manual(values = strategy_palette_label) +
+    labs(x = "Hospitals selected, m", y = "RMSE of sensitivity", linetype = NULL, shape = NULL) + base_theme
+  save_plot_set(p4, outdir, "nav_fig4_rmse", 13.8, 4.3)
+
+  p5 <- ggplot(perf[estimand == "national" & strategy %in% c("N4", "N5")], aes(hospital_sample_size, target_coverage, colour = strategy_label, linetype = strategy_label, shape = strategy_label)) +
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = .925, ymax = .975, alpha = .15) + geom_hline(yintercept = .95, linetype = 2) +
+    geom_line(linewidth = .8) + geom_point(size = 2.3) + coord_cartesian(ylim = c(.78, .985)) + scale_colour_manual(values = strategy_palette_label) +
+    labs(x = "Hospitals selected, m", y = "Empirical coverage of target sensitivity", linetype = NULL, shape = NULL) + base_theme
+  save_plot_set(p5, outdir, "nav_fig5_coverage_n4_n5", 8.3, 4.8)
+
+  p6 <- ggplot(counts[strategy %in% c("N2", "N4")], aes(hospital_sample_size, median, colour = factor(strategy), shape = factor(strategy))) +
+    geom_errorbar(aes(ymin = p05, ymax = p95), width = 3) + geom_point(size = 2.6) +
+    scale_shape_discrete(labels = labs[c("N2", "N4")]) + scale_colour_manual(values = strategy_palette_id[c("N2", "N4")], labels = labs[c("N2", "N4")], name = NULL) +
+    labs(x = "Hospitals selected, m", y = "Hard-subgroup positive cases (median; P5-P95)", shape = NULL) + base_theme
+  save_plot_set(p6, outdir, "nav_fig6_hard_positive_yield", 8.3, 4.8)
+
+  heat <- perf[, .(hospital_sample_size, strategy, estimand, status = ifelse(full_evidential_pass, "Pass", "Insufficient"))]
+  heat[, row := factor(paste(strategy, toupper(substr(estimand,1,1)), substring(estimand,2), sep = " - "), levels = rev(unique(paste(strategy, toupper(substr(estimand,1,1)), substring(estimand,2), sep = " - "))))]
+  p7 <- ggplot(heat, aes(factor(hospital_sample_size), row, fill = status)) + geom_tile(colour = "white") + geom_text(fontface = "bold", size = 3.8, fontface = "bold", size = 3.8, aes(label = status), size = 2.5) +
+    scale_fill_manual(values = c(Pass = sci_palette["green"], Insufficient = sci_palette["yellow"])) + labs(x = "Hospitals selected, m", y = NULL, fill = NULL) + base_theme
+  save_plot_set(p7, outdir, "nav_fig7_evidential_status", 8.4, 7.0)
+
+  d8 <- tac[hospital_sample_size == max(hospital_sample_size) & estimand %in% c("national", "hard")]
+  d8[, estimand := factor(estimand, levels = c("national", "hard"), labels = c("National sensitivity", "Hard-subgroup sensitivity"))]
+  p8 <- ggplot(d8, aes(strategy, proportion, fill = formal_tac)) + geom_col() + facet_wrap(~estimand, nrow = 1) +
+    scale_y_continuous(labels = percent) + scale_fill_manual(values = c(Adequate = "#8FD19E", Inconclusive = "#F6C667", "Not adequate" = "#F29E9E", "Evidentially insufficient" = "#B9C3E6"), drop = FALSE, name = NULL) + labs(x = NULL, y = "Decision frequency", fill = NULL) + base_theme
+  save_plot_set(p8, outdir, "nav_fig8_tac", 11.5, 5.2)
+
+  n3 <- raw[strategy == "N3" & estimand == "national", .(lower = quantile(estimate, .025), median = median(estimate), upper = quantile(estimate, .975)), by = hospital_sample_size]
+  par <- obs[strategy == "N3" & estimand == "national"][1]
+  p9 <- ggplot(n3, aes(hospital_sample_size, median)) + geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .22, fill = sci_palette["skyblue"]) + geom_line(colour = sci_palette["blue"], linewidth = .8) + geom_point(colour = sci_palette["blue"], size = 2.1) +
+    geom_hline(yintercept = par$observation_parameter, linetype = 3) + geom_hline(yintercept = par$target_parameter, linetype = 2) + geom_hline(yintercept = config$target$adequacy_threshold) +
+    annotate("text", x = 145, y = .865, label = sprintf("RTD = %+.3f", par$reference_target_discrepancy), hjust = 1) +
+    labs(x = "Hospitals selected, m", y = "National sensitivity") + base_theme
+  save_plot_set(p9, outdir, "nav_fig9_large_wrong_orp", 8.4, 4.9)
+}

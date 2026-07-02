@@ -1,0 +1,35 @@
+\begin{table}[h!]
+\centering
+\small
+\caption{Monte Carlo performance for national sensitivity.}
+\label{tab:nav-national-performance}
+\begin{tabular}{rrlrrrrr}
+\toprule
+$m$ & Strategy & Bias & ESD & RMSE & Mean SE & Coverage & Evidence \\
+\midrule
+40 & N1 & +0.0001 & 0.0141 & 0.0141 & 0.0141 & 0.953 & Pass \\
+40 & N2 & -0.0000 & 0.0238 & 0.0238 & 0.0230 & 0.922 & Fail \\
+40 & N3 & -0.0371 & 0.0254 & 0.0450 & 0.0251 & 0.629 & Fail \\
+40 & N4 & -0.0008 & 0.0207 & 0.0207 & 0.0205 & 0.946 & Fail \\
+40 & N5 & -0.0008 & 0.0207 & 0.0207 & 0.0144 & 0.828 & Fail \\
+80 & N1 & +0.0001 & 0.0093 & 0.0093 & 0.0094 & 0.955 & Pass \\
+80 & N2 & -0.0003 & 0.0157 & 0.0157 & 0.0155 & 0.941 & Fail \\
+80 & N3 & -0.0367 & 0.0157 & 0.0399 & 0.0157 & 0.288 & Fail \\
+80 & N4 & -0.0002 & 0.0135 & 0.0135 & 0.0135 & 0.949 & Pass \\
+80 & N5 & -0.0002 & 0.0135 & 0.0135 & 0.0102 & 0.863 & Fail \\
+120 & N1 & +0.0000 & 0.0072 & 0.0072 & 0.0072 & 0.949 & Pass \\
+120 & N2 & +0.0002 & 0.0121 & 0.0121 & 0.0119 & 0.945 & Pass \\
+120 & N3 & -0.0366 & 0.0109 & 0.0382 & 0.0109 & 0.045 & Fail \\
+120 & N4 & -0.0000 & 0.0101 & 0.0101 & 0.0100 & 0.947 & Pass \\
+120 & N5 & -0.0000 & 0.0101 & 0.0101 & 0.0083 & 0.892 & Fail \\
+160 & N1 & +0.0000 & 0.0058 & 0.0058 & 0.0058 & 0.951 & Pass \\
+160 & N2 & +0.0001 & 0.0096 & 0.0096 & 0.0096 & 0.944 & Pass \\
+160 & N3 & -0.0365 & 0.0073 & 0.0373 & 0.0073 & 0.000 & Fail \\
+160 & N4 & -0.0001 & 0.0079 & 0.0079 & 0.0078 & 0.946 & Pass \\
+160 & N5 & -0.0001 & 0.0079 & 0.0079 & 0.0072 & 0.925 & Fail \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\begin{minipage}{0.97\linewidth}\footnotesize Evidence is marked Pass only when the bias and precision tolerances are met, target interval coverage is acceptable, and the declared variance procedure is design-compatible.\end{minipage}
+\end{table}
+

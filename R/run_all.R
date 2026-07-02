@@ -1,0 +1,13 @@
+`%||%` <- function(x, y) if (is.null(x)) y else x
+args <- commandArgs(trailingOnly = TRUE)
+all_args <- commandArgs()
+file_arg <- sub("^--file=", "", grep("^--file=", all_args, value = TRUE)[1])
+script_dir <- dirname(normalizePath(file_arg, winslash = "/", mustWork = TRUE))
+project <- if (length(args)) normalizePath(args[[1]], winslash = "/", mustWork = TRUE) else normalizePath(file.path(script_dir, ".."), winslash = "/", mustWork = TRUE)
+for (f in c("dgp.R", "designs.R", "variance.R", "estimators.R", "run.R", "analyse.R", "validate.R", "make_figures.R", "make_tables.R")) source(file.path(project, "R", f))
+run_experiment_R(project)
+analyse_R(project)
+validate_R(project)
+make_figures_R(project)
+make_tables_R(project)
+message("R replication, validation, figures, and tables completed.")

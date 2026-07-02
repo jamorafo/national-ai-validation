@@ -1,0 +1,329 @@
+% ============================================================================
+% Technical appendix for national-AI-validation
+% Requires: amsmath, amssymb, booktabs
+% ============================================================================
+\providecommand{\navdir}{national-AI-validation}
+
+\section{Technical Appendix to the National Probability-Based Validation Simulation}
+\label{app:sim-national-ai-validation}
+
+\subsection{Finite-population generation}
+
+The finite population contains \(H=400\) hospitals, of which
+\(H_0=300\) belong to the standard design stratum and \(H_1=100\) to the
+priority stratum. Hospital sizes are generated from a truncated log-normal
+construction,
+\[
+  N_h
+  =
+  \min\{105,\max\{35,\operatorname{round}(\widetilde N_h)\}\},
+  \qquad
+  \log \widetilde N_h
+  \sim
+  \mathcal N(4.1276331,0.25^2).
+\]
+The realised total is \(N_T=25{,}585\).
+
+For each hospital, let
+\[
+  (b_{Qh},b_{Yh},b_{Ah})^\top
+  \sim
+  \mathcal N(0,\Sigma_b),
+\]
+with standard deviations \((0.30,0.38,1.20)\) and correlation matrix
+\[
+  R_b
+  =
+  \begin{pmatrix}
+    1 & 0.15 & 0 \\
+    0.15 & 1 & 0.15 \\
+    0 & 0.15 & 1
+  \end{pmatrix}.
+\]
+For patient \(i\) in hospital \(h\), the harder-subgroup indicator is
+\begin{equation}
+  \operatorname{logit}\Pr(Q_{hi}=1\mid H_h,b_{Qh})
+  =
+  \operatorname{logit}(0.12)+1.80H_h+b_{Qh}.
+  \label{eq:nav-app-q}
+\end{equation}
+The deterioration outcome is generated from
+\begin{equation}
+  \operatorname{logit}\Pr(Y_{hi}=1\mid H_h,Q_{hi},b_{Yh})
+  =
+  \operatorname{logit}(0.14)+0.45H_h+0.65Q_{hi}+b_{Yh}.
+  \label{eq:nav-app-y}
+\end{equation}
+Among outcome-positive admissions, the locked alert is generated from
+\begin{equation}
+  \operatorname{logit}\Pr(A_{hi}=1\mid Y_{hi}=1,H_h,Q_{hi},b_{Ah})
+  =
+  \operatorname{logit}(0.97)-0.55H_h-2.00Q_{hi}+b_{Ah}.
+  \label{eq:nav-app-a}
+\end{equation}
+For completeness, false-alert probabilities among \(Y=0\) are generated from
+\[
+  \operatorname{logit}\Pr(A_{hi}=1\mid Y_{hi}=0,H_h,Q_{hi},b_{Yh})
+  =
+  \operatorname{logit}(0.10)+0.15H_h+0.15Q_{hi}+0.20b_{Yh}.
+\]
+False alerts do not enter the sensitivity estimands.
+
+The population is generated once with master seed 141421 and then frozen. No
+DGP parameter is altered after observing the strategy results.
+
+\subsection{Target and observation parameters}
+
+The finite-population target distribution assigns mass \(1/N_T\) to every
+eligible admission. The national and subgroup parameters are ratios of fixed
+finite-population totals:
+\[
+  \theta_{T,q}
+  =
+  \frac{T_{T,q}}{Y_{T,q}},
+  \qquad
+  T_{T,q}=\sum_h\sum_i\mathbf 1(Q_{hi}=q)A_{hi}Y_{hi},
+  \qquad
+  Y_{T,q}=\sum_h\sum_i\mathbf 1(Q_{hi}=q)Y_{hi}.
+\]
+The national parameter is obtained by omitting the subgroup indicator.
+
+For design \(k\), the unweighted observation distribution is
+\[
+  P_{\mathcal O,k}(h,i)
+  =
+  \frac{\pi_{hi}^{(k)}}{\sum_g\sum_r\pi_{gr}^{(k)}}.
+\]
+Its subgroup sensitivity parameter is
+\[
+  \theta_{\mathcal O,k,q}
+  =
+  \frac{
+    \sum_h\sum_i \pi_{hi}^{(k)}\mathbf 1(Q_{hi}=q)A_{hi}Y_{hi}
+  }{
+    \sum_h\sum_i \pi_{hi}^{(k)}\mathbf 1(Q_{hi}=q)Y_{hi}
+  }.
+\]
+These parameters were calculated exactly from the locked finite population
+before Monte Carlo sampling.
+
+\subsection{Inclusion probabilities and allocations}
+
+N1 draws a patient SRSWOR of size
+\[
+  n_m
+  =
+  \operatorname{round}\left(N_T\frac{m}{400}\right),
+\]
+which gives \(n_m\in\{2559,5117,7676,10234\}\) for
+\(m\in\{40,80,120,160\}\). Every patient has inclusion probability
+\(n_m/N_T\).
+
+For hospital strategies, hospitals are sampled independently by SRSWOR within
+stratum. If \(m_j\) hospitals are selected from \(H_j\), then every admission
+in hospital stratum \(j\) has first-order inclusion probability
+\[
+  \pi_{hi}=\pi_h=\frac{m_j}{H_j}.
+\]
+N2 uses proportional allocations
+\[
+  (m_0,m_1)
+  \in
+  \{(30,10),(60,20),(90,30),(120,40)\}.
+\]
+N3--N5 use enriched allocations
+\[
+  (m_0,m_1)
+  \in
+  \{(20,20),(40,40),(60,60),(80,80)\}.
+\]
+All admissions in selected hospitals are observed during the same fixed audit
+period. There is no patient subsampling inside hospitals and no month-level
+selection stage.
+
+\subsection{Estimators}
+
+For N1, ordinary sample sensitivity is
+\[
+  \widehat\theta_{N1}
+  =
+  \frac{\sum_{i\in s}A_iY_i}{\sum_{i\in s}Y_i}.
+\]
+
+For N3, the enriched ORP is analysed using the pooled unweighted ratio
+\[
+  \widehat\theta_{N3}
+  =
+  \frac{\sum_{h\in s_0\cup s_1}T_h}
+       {\sum_{h\in s_0\cup s_1}Y_h}.
+\]
+
+For N2, N4, and N5, define design-expanded stratum totals
+\[
+  \widehat T_j
+  =
+  \frac{H_j}{m_j}\sum_{h\in s_j}T_h,
+  \qquad
+  \widehat Y_j
+  =
+  \frac{H_j}{m_j}\sum_{h\in s_j}Y_h.
+\]
+The design-weighted combined ratio is
+\[
+  \widehat\theta_w
+  =
+  \frac{\widehat T_0+\widehat T_1}
+       {\widehat Y_0+\widehat Y_1}.
+\]
+For subgroup \(q\), \(T_h\) and \(Y_h\) are replaced by
+\(T_{hq}\) and \(Y_{hq}\) before stratum totals are added.
+
+\subsection{Variance procedures}
+
+For the design-weighted combined ratio, let
+\[
+  z_{hj}=T_{hj}-\widehat\theta_wY_{hj}
+\]
+and let \(s_{z,j}^2\) be the sample variance of \(z_{hj}\) among selected
+hospitals in stratum \(j\). The Taylor variance estimator is
+\begin{equation}
+  \widehat{\operatorname{Var}}(\widehat\theta_w)
+  =
+  \frac{
+    \sum_{j=0}^1
+    H_j^2\left(1-\frac{m_j}{H_j}\right)
+    \frac{s_{z,j}^2}{m_j}
+  }{
+    (\widehat Y_0+\widehat Y_1)^2
+  }.
+  \label{eq:nav-app-taylor}
+\end{equation}
+Independent stratum contributions are therefore added before division by the
+squared expanded denominator.
+
+For N3, the same ratio-linearisation idea is applied to unexpanded sample
+sums. Its variance estimates sampling dispersion around the parameter targeted
+by the unweighted estimator:
+\[
+  \widehat{\operatorname{Var}}(\widehat\theta_{N3})
+  =
+  \frac{
+    \sum_{j=0}^1
+    m_j\left(1-\frac{m_j}{H_j}\right)s_{z,j}^2
+  }{
+    \left(\sum_{h\in s_0\cup s_1}Y_h\right)^2
+  }.
+\]
+
+N5 uses the same weighted point estimate as N4 but treats positive patients as
+independent. With stratum weights \(w_j=H_j/m_j\), its naive variance is
+\[
+  \widehat{\operatorname{Var}}_{\mathrm{naive}}(\widehat\theta_w)
+  =
+  \frac{
+    \sum_{j=0}^1 w_j^2
+    \left[
+      T_{s,j}(1-\widehat\theta_w)^2
+      +(Y_{s,j}-T_{s,j})\widehat\theta_w^2
+    \right]
+  }{
+    \left(\sum_{j=0}^1w_jY_{s,j}\right)^2
+  }.
+\]
+This expression ignores the hospital-level dependence and is intentionally
+incompatible with the design.
+
+For all strategies, a logit-transformed 95\% interval is formed as
+\[
+  \operatorname{expit}\left[
+    \operatorname{logit}(\widehat\theta)
+    \pm
+    1.96\frac{\widehat{\operatorname{SE}}(\widehat\theta)}
+                    {\widehat\theta(1-\widehat\theta)}
+  \right].
+\]
+
+\subsection{PR, uncertainty, and TAC classification}
+
+For each strategy and estimand, the Monte Carlo bias and variance are
+\[
+  \operatorname{Bias}_k
+  =
+  \frac{1}{R}\sum_{r=1}^R\widehat\theta_{kr}-\theta_T,
+  \qquad
+  \operatorname{Var}_k
+  =
+  \frac{1}{R-1}\sum_{r=1}^R
+  (\widehat\theta_{kr}-\overline{\widehat\theta}_k)^2.
+\]
+The declared point-estimation PR conditions are
+\[
+  |\operatorname{Bias}_k|\leq0.03,
+  \qquad
+  \operatorname{Var}_k\leq(0.03/1.96)^2.
+\]
+Interval coverage is reported separately. Formal TAC requires the PR
+point-estimation conditions, acceptable target-parameter coverage, and a
+variance procedure structurally compatible with the design. The last condition
+prevents accidental coverage in one simulation cell from legitimising N5's
+known incompatible variance rule.
+
+For a valid interval \([L,U]\),
+\[
+  \operatorname{TAC}(0.85)
+  =
+  \begin{cases}
+    \text{Adequate}, & L\geq0.85,\\
+    \text{Not adequate}, & U<0.85,\\
+    \text{Inconclusive}, & L<0.85\leq U.
+  \end{cases}
+\]
+When the evidential gate fails, the formal status is
+\(\text{Evidentially insufficient}\). Mechanical interval-threshold outcomes
+are retained in the replication file for diagnostic purposes only.
+
+\subsection{Monte Carlo uncertainty}
+
+For \(R\) estimable replications, the Monte Carlo standard error of bias is
+\[
+  \operatorname{MCSE}(\widehat{\operatorname{Bias}})
+  =
+  \frac{\operatorname{ESD}(\widehat\theta)}{\sqrt R}.
+\]
+For an estimated proportion \(\widehat p\), including coverage, TAC, and
+non-estimability frequencies,
+\[
+  \operatorname{MCSE}(\widehat p)
+  =
+  \sqrt{\frac{\widehat p(1-\widehat p)}{R}}.
+\]
+Writing \(e_r^2=(\widehat\theta_r-\theta_T)^2\), the delta-method MCSE of RMSE
+is
+\[
+  \operatorname{MCSE}(\widehat{\operatorname{RMSE}})
+  =
+  \frac{\operatorname{SD}(e_r^2)}
+       {2\widehat{\operatorname{RMSE}}\sqrt R}.
+\]
+
+\subsection{Seed mapping and implementation checks}
+
+The Python sub-seed for master seed \(M\), design label \(L\), sample size
+\(m\), replication \(r\), and language tag is generated from
+\[
+  \texttt{SHA256}(M\,|\,L\,|\,m\,|\,r\,|\,\texttt{python}).
+\]
+The first eight digest bytes are interpreted as an unsigned little-endian
+integer and reduced modulo \(2^{63}-1\). N3--N5 share the label
+\texttt{ENRICHED}, ensuring identical samples within replication. The R
+implementation uses the analogous SHA-256 mapping with language tag
+\texttt{R} and an R-compatible integer reduction.
+
+The executable validation suite verifies inclusion probabilities, absence of
+month sampling, exact sample identity for N3--N5, exact point-estimate identity
+for N4 and N5, direct enumeration of finite-population truths, approximate
+unbiasedness of N1, design consistency of N4, convergence of N3 toward
+\(\theta_{\mathcal O,3}\), detection of N5 uncertainty failure, and the absence
+of formal TAC classifications after an evidential-gate failure. The full
+machine-readable results and software checksums are stored in
+\texttt{results/summary/validation\_results.json}.

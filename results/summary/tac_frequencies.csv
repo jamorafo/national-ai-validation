@@ -1,0 +1,70 @@
+hospital_sample_size,strategy,estimand,formal_tac,count,proportion,proportion_mcse
+40,N1,easy,Adequate,5000,1.0,0.0
+40,N1,hard,Evidentially insufficient,5000,1.0,0.0
+40,N1,national,Adequate,2359,0.4718,0.007059812462098409
+40,N1,national,Inconclusive,2641,0.5282,0.007059812462098409
+40,N2,easy,Evidentially insufficient,5000,1.0,0.0
+40,N2,hard,Evidentially insufficient,5000,1.0,0.0
+40,N2,national,Evidentially insufficient,5000,1.0,0.0
+40,N3,easy,Evidentially insufficient,5000,1.0,0.0
+40,N3,hard,Evidentially insufficient,5000,1.0,0.0
+40,N3,national,Evidentially insufficient,5000,1.0,0.0
+40,N4,easy,Evidentially insufficient,5000,1.0,0.0
+40,N4,hard,Evidentially insufficient,5000,1.0,0.0
+40,N4,national,Evidentially insufficient,5000,1.0,0.0
+40,N5,easy,Evidentially insufficient,5000,1.0,0.0
+40,N5,hard,Evidentially insufficient,5000,1.0,0.0
+40,N5,national,Evidentially insufficient,5000,1.0,0.0
+80,N1,easy,Adequate,5000,1.0,0.0
+80,N1,hard,Evidentially insufficient,5000,1.0,0.0
+80,N1,national,Adequate,4064,0.8128,0.005516451033046519
+80,N1,national,Inconclusive,936,0.1872,0.005516451033046518
+80,N2,easy,Adequate,5000,1.0,0.0
+80,N2,hard,Evidentially insufficient,5000,1.0,0.0
+80,N2,national,Evidentially insufficient,5000,1.0,0.0
+80,N3,easy,Evidentially insufficient,5000,1.0,0.0
+80,N3,hard,Evidentially insufficient,5000,1.0,0.0
+80,N3,national,Evidentially insufficient,5000,1.0,0.0
+80,N4,easy,Adequate,5000,1.0,0.0
+80,N4,hard,Evidentially insufficient,5000,1.0,0.0
+80,N4,national,Adequate,2454,0.4908,0.007069870720175865
+80,N4,national,Inconclusive,2546,0.5092,0.007069870720175865
+80,N5,easy,Evidentially insufficient,5000,1.0,0.0
+80,N5,hard,Evidentially insufficient,5000,1.0,0.0
+80,N5,national,Evidentially insufficient,5000,1.0,0.0
+120,N1,easy,Adequate,5000,1.0,0.0
+120,N1,hard,Evidentially insufficient,5000,1.0,0.0
+120,N1,national,Adequate,4801,0.9602,0.0027646323444537775
+120,N1,national,Inconclusive,199,0.0398,0.0027646323444537792
+120,N2,easy,Adequate,5000,1.0,0.0
+120,N2,hard,Evidentially insufficient,5000,1.0,0.0
+120,N2,national,Adequate,2904,0.5808,0.006978128115762852
+120,N2,national,Inconclusive,2096,0.4192,0.006978128115762852
+120,N3,easy,Evidentially insufficient,5000,1.0,0.0
+120,N3,hard,Evidentially insufficient,5000,1.0,0.0
+120,N3,national,Evidentially insufficient,5000,1.0,0.0
+120,N4,easy,Adequate,5000,1.0,0.0
+120,N4,hard,Evidentially insufficient,5000,1.0,0.0
+120,N4,national,Adequate,3592,0.7184,0.006360840196074729
+120,N4,national,Inconclusive,1408,0.2816,0.006360840196074729
+120,N5,easy,Evidentially insufficient,5000,1.0,0.0
+120,N5,hard,Evidentially insufficient,5000,1.0,0.0
+120,N5,national,Evidentially insufficient,5000,1.0,0.0
+160,N1,easy,Adequate,5000,1.0,0.0
+160,N1,hard,Not adequate,5000,1.0,0.0
+160,N1,national,Adequate,4988,0.9976,0.0006919884392097831
+160,N1,national,Inconclusive,12,0.0024,0.000691988439209789
+160,N2,easy,Adequate,5000,1.0,0.0
+160,N2,hard,Evidentially insufficient,5000,1.0,0.0
+160,N2,national,Adequate,3916,0.7832,0.005827482475306125
+160,N2,national,Inconclusive,1084,0.2168,0.005827482475306125
+160,N3,easy,Evidentially insufficient,5000,1.0,0.0
+160,N3,hard,Evidentially insufficient,5000,1.0,0.0
+160,N3,national,Evidentially insufficient,5000,1.0,0.0
+160,N4,easy,Adequate,5000,1.0,0.0
+160,N4,hard,Not adequate,5000,1.0,0.0
+160,N4,national,Adequate,4615,0.923,0.003770172409850774
+160,N4,national,Inconclusive,385,0.077,0.0037701724098507753
+160,N5,easy,Evidentially insufficient,5000,1.0,0.0
+160,N5,hard,Evidentially insufficient,5000,1.0,0.0
+160,N5,national,Evidentially insufficient,5000,1.0,0.0

@@ -1,0 +1,39 @@
+# R session files
+.Rhistory
+.RData
+.Ruserdata
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Large raw simulation outputs
+results/raw/
+
+# Logs and local checkpoints
+results/logs/
+checkpoints/
+CHANGELOG_LOCAL.md
+
+# Temporary/backups
+_backup*/
+_restore*/
+_patch*/
+* - Copy/
+*.bak
+*.tmp
+*.zip
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# OS files
+.DS_Store
+Thumbs.db
