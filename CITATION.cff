@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: "National AI Validation Simulation"
+message: "If you use this repository, please cite it as below."
+type: software
+authors:
+  - family-names: "Morales-Forero"
+    given-names: "Andrés"
+repository-code: "https://github.com/jamorafo/national-ai-validation"
+abstract: "Reproducible code, simulation documentation, and generated outputs for the dissertation chapter Objective Reference Points, Predictive Representativity, and External Transportability, part of the dissertation Toward Safe AI."
+keywords:
+  - predictive representativity
+  - external transportability
+  - objective reference points
+  - simulation study
+  - AI validation
+  - clinical AI
+license: "NOASSERTION"
