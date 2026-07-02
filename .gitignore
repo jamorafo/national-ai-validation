@@ -38,3 +38,7 @@ _patch*/
 .DS_Store
 Thumbs.db
 figures/python_validation/
+*.bak*
+*_backup*
+*_patch*
+*_restore*
