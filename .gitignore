@@ -42,3 +42,9 @@ figures/python_validation/
 *_backup*
 *_patch*
 *_restore*
+*.bak
+*.bak*
+*_backup*
+*_patch*
+*_restore*
+figures/python_validation/

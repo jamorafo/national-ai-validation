@@ -1,128 +1,65 @@
-\# Reporting and Reproducibility Checklist
+# Reporting Checklist
 
+This checklist maps the repository contents to the ADEMP structure for simulation studies and to practical reproducibility requirements.
 
+## 1. ADEMP mapping
 
-This checklist documents how the repository supports transparent reporting for
-
-the simulation study in the dissertation chapter:
-
-
-
-> \*\*Objective Reference Points, Predictive Representativity, and External Transportability\*\*
-
-
-
-The checklist is organized around ADEMP for simulation studies and FAIR-inspired
-
-repository documentation.
-
-
-
-\## 1. ADEMP simulation reporting
-
-
-
-| Item | Repository location | Status |
-
+| ADEMP item | What is reported | Repository location |
 |---|---|---|
+| Aims | Study purpose and validation questions | `README.md`, `docs/simulation_description.md` |
+| Data-generating mechanisms | Finite target population, hospital heterogeneity, subgroup structure, locked threshold | `docs/simulation_description.md`, `R/dgp.R` |
+| Estimands | National, easy-subgroup, and hard-subgroup target sensitivity; source-to-target degradation | `docs/simulation_description.md`, `R/analyse.R` |
+| Methods | ORP strategies, estimators, variance procedures, Monte Carlo execution | `R/designs.R`, `R/estimators.R`, `R/variance.R`, `R/run.R` |
+| Performance measures | Bias, RMSE, coverage, standard errors, decision frequencies | `docs/simulation_description.md`, `R/analyse.R`, `R/validate.R` |
 
-| Aims are stated | `docs/simulation\_description.md` | Reported |
+## 2. Decision-rule reporting
 
-| Data-generating mechanism is described | `docs/simulation\_description.md`, `R/dgp.R` | Reported |
-
-| Estimands are defined | `docs/simulation\_description.md`, dissertation chapter | Reported |
-
-| Methods/designs are identified | `R/designs.R`, `R/estimators.R`, `R/run.R` | Reported in code and documentation |
-
-| Performance measures are identified | `R/analyse.R`, `R/validate.R`, `docs/simulation\_description.md` | Reported |
-
-| Monte Carlo summaries are stored | `results/summary/` | Reported |
-
-| Tables are generated reproducibly | `R/make\_tables.R`, `tables/` | Reported |
-
-| Figures are generated reproducibly | `R/make\_figures.R`, `R/tr\_etc\_fixed\_source.R`, `figures/r\_publication/` | Reported |
-
-| Random seeds are documented | `docs/simulation\_description.md` | To complete after seed search |
-
-| Raw replication files are handled transparently | `.gitignore`, `README.md` | Reported |
-
-
-
-\## 2. Prediction-model / AI reporting orientation
-
-
-
-The repository is not a clinical prediction-model development report and is not
-
-a clinical trial. However, it follows the spirit of transparent AI evaluation
-
-reporting by documenting:
-
-
-
-| Item | Repository location | Status |
-
-|---|---|---|
-
-| Locked predictive system assumed | Dissertation chapter, simulation description | Reported |
-
-| Target performance claims specified | Dissertation chapter, simulation description | Reported |
-
-| Target population / target condition represented | Dissertation chapter, `R/dgp.R` | Reported |
-
-| Subgroup estimands represented | `R/dgp.R`, `R/analyse.R`, simulation description | Reported |
-
-| Uncertainty intervals reported | `R/analyse.R`, `R/tr\_etc\_fixed\_source.R`, figures/tables | Reported |
-
-| Decision thresholds specified | `R/tr\_etc\_fixed\_source.R`, simulation description | Reported |
-
-| Limitations of applicability stated | Dissertation chapter, README | Reported |
-
-
-
-\## 3. FAIR-inspired repository practices
-
-
-
-| FAIR principle | Repository implementation |
-
+| Item | Repository location |
 |---|---|
+| Target Adequacy Criterion | `docs/simulation_description.md`, dissertation chapter |
+| External Transportability Criterion | `docs/simulation_description.md`, `R/tr_etc_fixed_source.R` |
+| Predictive Representativity gate | `docs/simulation_description.md`, dissertation chapter |
+| Interval-based decision rules | `docs/simulation_description.md`, `R/analyse.R`, `R/tr_etc_fixed_source.R` |
+| Point-region versus interval-verdict distinction | `docs/simulation_description.md`, fixed-source ETC figure caption |
 
-| Findable | Repository has descriptive README, structured folders, and citation metadata can be added through `CITATION.cff`. |
+## 3. Reproducibility reporting
 
-| Accessible | Code, summary outputs, tables, and figures are available in the GitHub repository. |
-
-| Interoperable | Outputs use common formats: CSV, TEX, PDF, PNG, SVG, R scripts, Markdown. |
-
-| Reusable | Workflow commands, dependencies, and generated outputs are documented. Raw replication files are excluded but regenerable. |
-
-
-
-\## 4. Non-applicable reporting standards
-
-
-
-The following standards are relevant context but are not claimed as applicable
-
-checklists for this repository:
-
-
-
-| Standard / guidance | Reason for non-applicability |
-
+| Item | Repository location |
 |---|---|
+| Main workflow command | `README.md`, `docs/reproducibility.md` |
+| Output-only workflow command | `README.md`, `docs/reproducibility.md` |
+| Dependencies | `README.md`, `R/install_packages.R`, `requirements.txt` |
+| Random seeds | `docs/reproducibility.md`, `config/seeds.csv` |
+| Tracked outputs | `README.md`, `docs/reproducibility.md` |
+| Excluded raw outputs | `.gitignore`, `README.md`, `docs/reproducibility.md` |
+| Generated figures | `figures/r_publication/` |
+| Generated tables | `tables/` |
+| Summary outputs | `results/summary/` |
 
-| CONSORT-AI | The study is not a randomized clinical trial of an AI intervention. |
+## 4. Scope statements
 
-| SPIRIT-AI | The study is not a clinical trial protocol. |
+| Statement | Status |
+|---|---|
+| This is a methodological simulation | Reported |
+| This is not a clinical trial | Reported |
+| This is not a deployed clinical AI evaluation | Reported |
+| R is the canonical workflow | Reported |
+| Python is retained for historical cross-checking | Reported |
+| Raw replication files are excluded but regenerable | Reported |
 
-| DECIDE-AI | The study is not an early-stage clinical evaluation of an AI decision-support system. |
+## 5. Repository hygiene
 
-| TRIPOD+AI | The study concerns methodological validation and simulation, not a full clinical prediction-model development or validation report. |
+Before release, the repository should not contain:
 
+```text
+*.bak
+*.bak*
+*_patch*
+*_backup*
+*_restore*
+checkpoints/
+results/raw/
+figures/python_validation/
+```
 
-
-These guidelines are cited as contextual references for transparent AI and
-
-prediction-model evaluation, not as formal compliance claims.
-
+The public repository should contain clean canonical scripts, generated manuscript outputs, and documentation sufficient to reproduce or inspect the study.

@@ -1,7 +1,6 @@
 # National AI Validation Simulation
 
-This repository contains the reproducible code, simulation documentation, and
-generated manuscript outputs for the dissertation chapter:
+This repository contains the reproducible code, simulation documentation, and generated manuscript outputs for the dissertation chapter:
 
 > **Objective Reference Points, Predictive Representativity, and External Transportability**
 
@@ -11,42 +10,180 @@ The chapter is part of the dissertation:
 
 Author: **Andrés Morales-Forero**
 
-## Overview
+## Purpose
 
-This repository implements a methodological simulation study for evaluating
-target performance, Predictive Representativity, and external transportability
-of a locked predictive system under different Objective Reference Point (ORP)
-construction strategies.
+This repository supports a methodological simulation study about validation of a locked predictive system in a target deployment condition.
 
-The study examines how the design of a target-country audit, the estimator, and
-the uncertainty procedure affect the evidence available for regulatory-style
-claims about model performance.
+The simulation asks whether an audit conducted in a target country can support three types of evidence:
 
-The repository is organized so that the simulation workflow, decision criteria,
-generated tables, and publication figures can be inspected and reproduced.
+1. **Target adequacy:** whether performance in the target condition is high enough for the intended claim.
+2. **Predictive Representativity:** whether the audit design, estimator, and uncertainty procedure are adequate for the estimand being invoked.
+3. **External transportability:** whether a source performance claim remains acceptable after allowing for source-to-target degradation.
 
-## Reporting and reproducibility orientation
+The repository is intended to support inspection, rerunning, and reuse of the simulation workflow used in the dissertation chapter.
 
-The repository is documented using good-practice principles from the following
-international reporting and reproducibility frameworks:
+## Documentation approach
 
-- **ADEMP** for simulation studies: Aims, Data-generating mechanisms,
-  Estimands, Methods, and Performance measures.
-- **TRIPOD+AI** as contextual reporting guidance for prediction-model and
-  machine-learning evaluation studies.
-- **DECIDE-AI, CONSORT-AI, and SPIRIT-AI** as contextual AI-health reporting
-  references. These are not claimed as applicable reporting checklists here,
-  because this repository supports a methodological simulation rather than a
-  prospective clinical trial or early clinical evaluation study.
-- **FAIR principles** for making research objects findable, accessible,
-  interoperable, and reusable.
+The repository documentation is structured primarily using **ADEMP**, a recommended structure for simulation studies:
 
-This repository does not claim formal compliance with clinical trial reporting
-guidelines. Its purpose is to make the simulation design, stochastic settings,
-analysis workflow, and generated outputs transparent and reusable.
+- **Aims**
+- **Data-generating mechanisms**
+- **Estimands**
+- **Methods**
+- **Performance measures**
+
+FAIR-inspired repository practices are used operationally: files are organized with explicit names, key outputs are stored in common formats, and the workflow is documented so that the results can be regenerated. The repository does not claim formal compliance with clinical-trial reporting guidelines.
 
 Detailed documentation is provided in:
 
 ```text
 docs/simulation_description.md
+docs/reproducibility.md
 docs/reporting_checklist.md
+```
+
+## Repository structure
+
+```text
+config/                 Configuration and reproducibility records
+docs/                   Simulation and reproducibility documentation
+R/                      Canonical R implementation
+python/                 Historical Python implementation and cross-checks
+results/summary/        R-generated summary outputs used by the manuscript
+tables/                 Generated LaTeX tables
+figures/r_publication/  Publication figures generated from the R workflow
+latex/                  Manuscript-related LaTeX material
+tests/                  Validation and consistency checks
+report/                 Additional generated report material
+```
+
+Large raw replication files are not tracked because they can be regenerated from the documented workflow.
+
+## Canonical implementation
+
+The dissertation outputs are generated from the R workflow.
+
+The main entry point is:
+
+```text
+R/run_all.R
+```
+
+The main components are:
+
+```text
+R/dgp.R                   Data-generating mechanism
+R/designs.R               Audit design definitions
+R/estimators.R            Estimators used by the audit strategies
+R/variance.R              Variance and interval calculations
+R/run.R                   Monte Carlo execution
+R/analyse.R               Monte Carlo summaries
+R/validate.R              Consistency and validation checks
+R/make_figures.R          Main publication figures
+R/make_tables.R           LaTeX tables
+R/tr_etc_fixed_source.R   Fixed-source ETC addendum figures
+```
+
+Python files are retained for transparency and historical cross-checking, but the R workflow is the canonical implementation for the dissertation outputs.
+
+## Running the full workflow
+
+From the repository root, if `Rscript` is available on the system path:
+
+```bash
+Rscript R/run_all.R .
+```
+
+On Windows, if `Rscript` is not available on the system path, use the full path to `Rscript.exe`. For example:
+
+```bat
+"C:\Users\morales-fo.j\AppData\Local\Programs\R\R-4.5.3\bin\Rscript.exe" R\run_all.R .
+```
+
+The full workflow runs:
+
+1. finite-population simulation;
+2. Monte Carlo analysis;
+3. validation checks;
+4. publication figure generation;
+5. LaTeX table generation.
+
+## Regenerating manuscript outputs only
+
+If the Monte Carlo summaries already exist, tables and figures can be regenerated without rerunning the full simulation.
+
+```bash
+Rscript -e "source('R/make_tables.R'); make_tables_R(normalizePath(getwd(), winslash='/'))"
+
+Rscript -e "source('R/dgp.R'); source('R/make_figures.R'); make_figures_R(normalizePath(getwd(), winslash='/'))"
+
+Rscript R/tr_etc_fixed_source.R . --overwrite
+```
+
+On Windows, replace `Rscript` with the full path to `Rscript.exe` if needed.
+
+## Main tracked outputs
+
+The main tracked outputs used by the dissertation are:
+
+```text
+results/summary/performance_summary_R.csv
+results/summary/tac_frequencies_R.csv
+tables/*.tex
+figures/r_publication/*.pdf
+figures/r_publication/*.png
+figures/r_publication/*.svg
+```
+
+The fixed-source ETC addendum is generated by:
+
+```text
+R/tr_etc_fixed_source.R
+```
+
+and produces:
+
+```text
+figures/r_publication/decision_plane_target_adequacy_transportability.*
+figures/r_publication/fixed_source_target_estimates.*
+figures/r_publication/fixed_source_tac_etc_divergence.*
+```
+
+## Software requirements
+
+The main R packages used by the workflow are:
+
+```text
+data.table
+ggplot2
+scales
+svglite
+```
+
+They can be installed in R with:
+
+```r
+install.packages(c("data.table", "ggplot2", "scales", "svglite"))
+```
+
+See also:
+
+```text
+requirements.txt
+R/install_packages.R
+```
+
+## Reproducibility policy
+
+- The R implementation is canonical for the dissertation outputs.
+- Summary outputs in `results/summary/` are tracked.
+- Large raw replication files are excluded from version control.
+- Publication figures and LaTeX tables are tracked because they are used directly by the manuscript.
+- Backup files and local patch files are excluded.
+- Random seeds and reproducibility settings are documented in `docs/reproducibility.md`.
+
+## Repository link
+
+```text
+https://github.com/jamorafo/national-ai-validation
+```

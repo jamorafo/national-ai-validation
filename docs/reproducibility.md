@@ -1,67 +1,155 @@
-# Reproducibility record
+# Reproducibility Guide
 
-## Fixed design decisions
+This document describes how to reproduce the simulation outputs for the dissertation chapter:
 
-- Project: `national-AI-validation`
-- Master seed: `141421`
-- Monte Carlo replications: 5,000 per primary design/sample-size condition
-- Hospital sample sizes: 40, 80, 120, and 160
-- Common fixed audit period: all selected hospitals contribute a census of eligible admissions in the same pre-specified period
-- No month identifiers, month selection, collection-window selection, or month-level inclusion probabilities are used
-- Target adequacy threshold: 0.85
-- PR bias tolerance: 0.03
-- PR variance tolerance: `(0.03 / 1.96)^2`
+> **Objective Reference Points, Predictive Representativity, and External Transportability**
 
-## Python sub-seed algorithm
+Author: **Andrés Morales-Forero**
 
-For master seed `M`, design label `L`, hospital sample size `m`, replication `r`, and language tag `python`, form the UTF-8 string:
+## 1. Canonical workflow
 
-```text
-M|L|m|r|python
+The canonical workflow is implemented in R.
+
+Full workflow:
+
+```bash
+Rscript R/run_all.R .
 ```
 
-Compute its SHA-256 digest, interpret the first eight bytes as an unsigned little-endian integer, and reduce it modulo `2^63 - 1`. Labels are `N1`, `N2`, and `ENRICHED`. The same `ENRICHED` seed and selected hospitals are reused by N3, N4, and N5 within each replication.
+Windows example when `Rscript` is not available on the system path:
 
-## R sub-seed algorithm
+```bat
+"C:\Users\morales-fo.j\AppData\Local\Programs\R\R-4.5.3\bin\Rscript.exe" R\run_all.R .
+```
 
-R forms the analogous string with language tag `R`, computes SHA-256, converts the first eight hexadecimal digits through two four-digit blocks, reduces the value modulo `2,147,483,646`, and adds one. The R streams are deterministic and independent of the Python streams.
+## 2. Output-only workflow
 
-## Locked population and software
+If the Monte Carlo summaries already exist, regenerate manuscript outputs with:
 
-The executed Python run used:
+```bash
+Rscript -e "source('R/make_tables.R'); make_tables_R(normalizePath(getwd(), winslash='/'))"
 
-- Python 3.13.5
-- NumPy 2.3.5
-- pandas 2.2.3
-- SciPy 1.17.0
-- PyYAML 6.0.3
+Rscript -e "source('R/dgp.R'); source('R/make_figures.R'); make_figures_R(normalizePath(getwd(), winslash='/'))"
 
-Checksums from the executed run are stored in `results/summary/validation_results.json`. They include the configuration file, compressed finite population, and compressed replication results.
+Rscript R/tr_etc_fixed_source.R . --overwrite
+```
 
-## Validation checks
+Windows example:
 
-The executable validation script verifies that:
+```bat
+"C:\Users\morales-fo.j\AppData\Local\Programs\R\R-4.5.3\bin\Rscript.exe" -e "source('R/make_tables.R'); make_tables_R(normalizePath(getwd(), winslash='/'))"
 
-1. all hospital inclusion probabilities lie in `(0,1]`;
-2. no calendar-month sampling variable exists;
-3. the audit period is common and fixed;
-4. N3, N4, and N5 use the same realised ORP in every replication;
-5. N4 and N5 point estimates are identical to numerical precision;
-6. target truths match direct finite-population enumeration;
-7. N1 is approximately unbiased;
-8. N4 is design-consistent for national and subgroup parameters;
-9. N3 approaches the exact design-induced observation parameter;
-10. N4 and N5 have the same point-estimator distribution;
-11. the naive N5 variance failure is detected through national undercoverage;
-12. no formal TAC result is issued after an evidential-gate failure.
+"C:\Users\morales-fo.j\AppData\Local\Programs\R\R-4.5.3\bin\Rscript.exe" -e "source('R/dgp.R'); source('R/make_figures.R'); make_figures_R(normalizePath(getwd(), winslash='/'))"
 
-## Separation of evidence concepts
+"C:\Users\morales-fo.j\AppData\Local\Programs\R\R-4.5.3\bin\Rscript.exe" R\tr_etc_fixed_source.R . --overwrite
+```
 
-The summary files report four separate quantities:
+## 3. Random seeds
 
-- PR bias pass;
-- PR precision pass;
-- empirical target-interval coverage;
-- structural compatibility of the declared variance procedure.
+Random seeds must be documented so that stochastic components can be reproduced.
 
-The first two define the point-estimation component of PR under the pre-specified tolerances. Coverage remains a separate uncertainty diagnostic, as required. Formal TAC is reported only when point-estimation PR, target interval validity, and variance-procedure compatibility are all satisfied. This preserves the distinction between the chapter's PR definition and the reliability of the interval subsequently used by TAC.
+Run these commands from the repository root to identify seed definitions:
+
+```bat
+findstr /S /N /I /C:"set.seed" R\*.R
+findstr /S /N /I /C:"seed" R\*.R config\*.*
+```
+
+The seed record should be stored in:
+
+```text
+config/seeds.csv
+```
+
+Recommended format:
+
+```csv
+component,seed,script_or_file,purpose
+main_simulation,,R/run.R,Monte Carlo replication stream
+data_generating_process,,R/dgp.R,Synthetic finite population generation
+audit_sampling,,R/designs.R,ORP and audit-sample construction
+post_processing,not_stochastic,R/make_figures.R; R/make_tables.R; R/tr_etc_fixed_source.R,Deterministic table and figure generation
+```
+
+Do not leave empty seed fields in the final repository if the corresponding component is stochastic. If a component is deterministic, write `not_stochastic`.
+
+## 4. Tracked and untracked outputs
+
+Tracked:
+
+```text
+results/summary/
+tables/
+figures/r_publication/
+docs/
+R/
+config/
+```
+
+Not tracked:
+
+```text
+results/raw/
+checkpoints/
+local backups
+temporary patch files
+figures/python_validation/
+```
+
+Reason: raw replication files and local backups can be regenerated or are not part of the canonical dissertation outputs.
+
+## 5. Validation checks
+
+The fixed-source ETC script performs deterministic validation before writing figures. It checks that reconstructed logit intervals match stored half-widths and that expected values and decisions match within tolerance.
+
+The validation script is:
+
+```text
+R/validate.R
+```
+
+Additional fixed-source ETC validation is inside:
+
+```text
+R/tr_etc_fixed_source.R
+```
+
+## 6. Expected key outputs
+
+After successful regeneration, the following files or file families should exist:
+
+```text
+results/summary/performance_summary_R.csv
+results/summary/tac_frequencies_R.csv
+tables/nav_table_variance_comparison.tex
+tables/nav_table_mechanical_tac_m80.tex
+figures/r_publication/nav_fig7_evidential_status.*
+figures/r_publication/nav_fig8_tac.*
+figures/r_publication/nav_fig9_large_wrong_orp.*
+figures/r_publication/fixed_source_tac_etc_divergence.*
+```
+
+## 7. Repository hygiene
+
+Before pushing to GitHub, check for unwanted backup or patch files:
+
+```bat
+dir /S /B *bak*
+dir /S /B *backup*
+dir /S /B *patch*
+dir /S /B *restore*
+```
+
+The `.gitignore` file should exclude local backups and raw outputs.
+
+## 8. Commit workflow
+
+Recommended final check before commit:
+
+```bat
+git status --short
+git add README.md docs config R tables figures/r_publication results/summary .gitignore
+git status --short
+git commit -m "Update reproducibility documentation and generated outputs"
+git push
+```
