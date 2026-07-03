@@ -34,15 +34,6 @@ Rscript -e "source('R/dgp.R'); source('R/make_figures.R'); make_figures_R(normal
 Rscript R/tr_etc_fixed_source.R . --overwrite
 ```
 
-Windows example:
-
-```bat
-"C:\Users\morales-fo.j\AppData\Local\Programs\R\R-4.5.3\bin\Rscript.exe" -e "source('R/make_tables.R'); make_tables_R(normalizePath(getwd(), winslash='/'))"
-
-"C:\Users\morales-fo.j\AppData\Local\Programs\R\R-4.5.3\bin\Rscript.exe" -e "source('R/dgp.R'); source('R/make_figures.R'); make_figures_R(normalizePath(getwd(), winslash='/'))"
-
-"C:\Users\morales-fo.j\AppData\Local\Programs\R\R-4.5.3\bin\Rscript.exe" R\tr_etc_fixed_source.R . --overwrite
-```
 
 ## 3. Random seeds
 
