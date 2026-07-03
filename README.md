@@ -97,7 +97,7 @@ Rscript R/run_all.R .
 On Windows, if `Rscript` is not available on the system path, use the full path to `Rscript.exe`. For example:
 
 ```bat
-"C:\Users\morales-fo.j\AppData\Local\Programs\R\R-4.5.3\bin\Rscript.exe" R\run_all.R .
+"C:\Users\username\AppData\Local\Programs\R\R-4.5.3\bin\Rscript.exe" R\run_all.R .
 ```
 
 The full workflow runs:
