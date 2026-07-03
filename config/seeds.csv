@@ -1,0 +1,7 @@
+component,seed_or_rule,script_or_file,purpose
+master_seed,141421,config/config.yaml:3,Base seed defined in the project configuration
+finite_population,set.seed(config$project$master_seed),R/dgp.R:28,Synthetic finite target population generation
+N1_sampling_stream,stable_seed(master_seed; "N1"; m; rep - 1; "R"),R/run.R:32,Deterministic audit-sampling stream for N1 by hospital sample size and replication
+N2_sampling_stream,stable_seed(master_seed; "N2"; m; rep - 1; "R"),R/run.R:39,Deterministic audit-sampling stream for N2 by hospital sample size and replication
+enriched_sampling_stream,stable_seed(master_seed; "ENRICHED"; m; rep - 1; "R"),R/run.R:44,Deterministic audit-sampling stream for enriched ORP strategies by hospital sample size and replication
+post_processing,not_stochastic,R/make_tables.R; R/make_figures.R; R/tr_etc_fixed_source.R,Deterministic generation of manuscript tables and figures from stored summaries
